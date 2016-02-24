@@ -3,7 +3,11 @@ default['zabbix']['web']['password'] = 'zabbix'
 default['zabbix']['web']['install_method']  = 'apache'
 default['zabbix']['web']['fqdn']            = node['fqdn']
 default['zabbix']['web']['aliases']         = ['zabbix']
-default['zabbix']['web']['port']            = 80
+default['zabbix']['web']['port']            = nil # defaults to 80 for http, 443 for https
+default['zabbix']['web']['ssl']['enabled'] = false
+default['zabbix']['web']['ssl']['protocols'] = 'TLSv1.1 TLSv1.2'
+default['zabbix']['web']['ssl']['ciphers'] = 'EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH'
+default['zabbix']['web']['ssl']['prefer_server_ciphers'] = true
 
 default['zabbix']['web']['php']['fastcgi_listen'] = '127.0.0.1:9000' # only applicable when using php-fpm (nginx)
 default['zabbix']['web']['php']['settings']    = {

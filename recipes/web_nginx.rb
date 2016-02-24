@@ -52,6 +52,7 @@ template ::File.join(conf_dir, 'zabbix.conf.php') do
 end
 
 # install host for zabbix
+enable_ssl = node['zabbix']['web']['ssl']['enabled']
 template '/etc/nginx/sites-available/zabbix' do
   source 'zabbix_nginx.erb'
   owner 'root'
@@ -60,9 +61,13 @@ template '/etc/nginx/sites-available/zabbix' do
   variables(
     :server_name => node['zabbix']['web']['fqdn'],
     :php_settings => node['zabbix']['web']['php']['settings'],
-    :web_port => node['zabbix']['web']['port'],
+    :web_port => node['zabbix']['web']['port'] || enable_ssl ? '443 ssl' : '80',
     :web_dir => node['zabbix']['web_dir'],
-    :fastcgi_listen => node['zabbix']['web']['php']['fastcgi_listen']
+    :fastcgi_listen => node['zabbix']['web']['php']['fastcgi_listen'],
+    :ssl => enable_ssl,
+    :ssl_protocols => node['zabbix']['web']['ssl']['protocols'],
+    :ssl_ciphers => node['zabbix']['web']['ssl']['ciphers'],
+    :ssl_prefer_server_ciphers => node['zabbix']['web']['ssl']['prefer_server_ciphers']
   )
   notifies :reload, 'service[nginx]'
 end

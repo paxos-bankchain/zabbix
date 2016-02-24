@@ -1,9 +1,14 @@
 server {
-
   listen      <%= @web_port %>;
   index       index.php;
   root        <%= @web_dir %>;
   server_name "<%=@server_name%>";
+<%- if @ssl -%>
+
+  ssl_protocols <%= @ssl_protocols %>;
+  ssl_ciphers <%= @ssl_ciphers %>;
+  ssl_prefer_server_ciphers <%= @ssl_prefer_server_ciphers %>;
+<%- end -%>
   
   access_log /var/log/nginx/zabbix.access.log;
 
