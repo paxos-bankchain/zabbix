@@ -7,7 +7,7 @@ chef_gem 'zabbixapi' do
     version '~> 0.6.3'
   when '2.0', '2.2', '2.4', '3.0'
     version "~> #{server_version}.0"
-  when '3.2'
+  when '3.2', '3.4.6'
     version '~> 3.0.0'
   end
 end

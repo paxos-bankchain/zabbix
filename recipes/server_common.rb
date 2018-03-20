@@ -8,6 +8,7 @@
 #
 
 if node['zabbix']['login']
+  puts 'zabbix user called!'
   # Create zabbix group
   group node['zabbix']['group'] do
     gid node['zabbix']['gid']

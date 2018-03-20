@@ -53,7 +53,7 @@ zabbix_dirs.each do |dir|
 end
 
 if node['init_package'] == 'systemd'
-  template "/usr/lib/tmpfiles.d/zabbix.conf" do
+  template '/usr/lib/tmpfiles.d/zabbix.conf' do
     source 'tmpfiles.conf.erb'
     owner 'root'
     group 'root'

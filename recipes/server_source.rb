@@ -7,8 +7,15 @@
 # Apache 2.0
 #
 
-include_recipe 'zabbix::common'
 include_recipe 'zabbix::server_common'
+include_recipe 'zabbix::common'
+
+include_recipe 'yumgroup'
+
+# setup development tools - gcc and all development libraries needed for compiling zabbix
+yumgroup 'Development Tools' do
+  action :install
+end
 
 packages = []
 case node['platform']
@@ -30,7 +37,7 @@ when 'redhat', 'centos', 'scientific', 'amazon', 'oracle'
 
   curldev = (node['platform_version'].to_i < 6) ? 'curl-devel' : 'libcurl-devel'
 
-  packages = %w(fping iksemel-devel iksemel-utils net-snmp-libs net-snmp-devel openssl-devel php-pear)
+  packages = %w(fping iksemel-devel iksemel-utils net-snmp-libs net-snmp-devel openssl-devel php-pear pcre-devel libevent-devel mysql mysql-devel)
   packages.push('redhat-lsb') if node['init_package'] != 'systemd'
   packages.push(curldev)
 
@@ -59,8 +66,8 @@ when 'redhat', 'centos', 'scientific', 'amazon', 'oracle'
   init_template = 'zabbix_server.init-rh.erb'
 end
 
-packages.each do |pck|
-  package pck do
+packages.each do | pkg |
+  package pkg do
     action :install
   end
 end
@@ -94,7 +101,7 @@ when 'oracle'
   configure_options << with_oracle_include unless configure_options.include?(with_oracle_include)
 end
 
-if node['zabbix']['server']['java_gateway_enable'] == true
+if node['zabbix']['server']['java_gateway_enable']
   include_recipe 'java' # install a JDK if not present
   configure_options << '--enable-java' unless configure_options.include?('--enable-java')
 end
@@ -161,6 +168,6 @@ service 'zabbix_server' do
 end
 
 # Configure the Java Gateway
-if node['zabbix']['server']['java_gateway_enable'] == true
+if node['zabbix']['server']['java_gateway_enable']
   include_recipe 'zabbix::java_gateway'
 end
