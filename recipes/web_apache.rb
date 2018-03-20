@@ -13,12 +13,6 @@ directory node['zabbix']['install_dir'] do
   mode '0755'
 end
 
-unless node['zabbix']['web']['user']
-  node.normal['zabbix']['web']['user'] = 'apache'
-end
-
-user node['zabbix']['web']['user']
-
 node['zabbix']['web']['packages'].each do |pkg|
   package pkg do
     action :install
