@@ -21,6 +21,6 @@ default['zabbix']['web']['packages'] = value_for_platform_family(
     if node['platform_version'].to_f < 6.0
       %w(php53-mysql php53-gd php53-bcmath php53-mbstring)
     else
-      %w(php php-mysql php-gd php-bcmath php-mbstring php-xml)
+      %w(php56 php56-mysqlnd php56-gd php56-bcmath php56-mbstring php56-xml)
     end
   )

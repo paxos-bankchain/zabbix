@@ -2,7 +2,7 @@ include_attribute 'zabbix'
 
 default['zabbix']['server']['version']                = '3.4.6'
 default['zabbix']['server']['branch']                 = 'ZABBIX%20Latest%20Stable'
-default['zabbix']['server']['source_url']             = nil
+default['zabbix']['server']['source_url']             = "http://repo.zabbix.com/zabbix/3.4/rhel/5/x86_64/zabbix-release-3.4-1.noarch.rpm"
 default['zabbix']['server']['install_method']         = 'source'
 default['zabbix']['server']['configure_options']      = ['--with-libcurl', '--with-net-snmp']
 default['zabbix']['server']['include_dir']            = '/opt/zabbix/server_include'

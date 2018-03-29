@@ -23,7 +23,7 @@
 # SOFTWARE.
 
 case node['platform_family']
-when 'rhel' or 'amazon'
+when 'rhel', 'amazon'
 
   os_version = node['platform_version'].split('.').first
   remote_file "#{Chef::Config[:file_cache_path]}/zabbix_repo.rpm" do

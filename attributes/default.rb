@@ -28,3 +28,4 @@ default['zabbix']['uid']    = nil
 default['zabbix']['gid']    = nil
 default['zabbix']['home']   = '/opt/zabbix'
 default['zabbix']['shell']  = '/bin/bash'
+default['mariadb']['use_default_repository'] = true

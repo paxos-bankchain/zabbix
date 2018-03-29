@@ -22,12 +22,26 @@ end
 def database_exists?(dbname, host, port, root_username, root_password)
   exists = false
   db = nil
+  connection = false
   begin
     db = ::Mysql.new(host, root_username, root_password, dbname, port)
+    connection = true
+    # Make sure the last query is completed for database population
+    rs = db.query("SELECT sysmap_shapeid FROM sysmap_shape LIMIT 1")
+    if rs.num_rows < 1
+      raise ::Mysql::Error
+    end
     exists = true
     Chef::Log.info("Connection to database '#{dbname}' on '#{host}' successful")
   rescue ::Mysql::Error
-    Chef::Log.info("Connection to database '#{dbname}' on '#{host}' failed")
+    if connection
+      Chef::Log.info("Database '#{dbname}' popualtion incomplete, clean database and re-run")
+      db.query("DROP DATABASE #{dbname}")
+      db.query("CREATE DATABASE #{dbname}")
+      Chef::Log.info("successfully dropped table '#{dbname}'")
+    else
+      Chef::Log.info("Connection to database '#{dbname}' on '#{host}' failed")
+    end
   ensure
     db.close unless db.nil?
   end
@@ -38,6 +52,7 @@ action :create do
   if @current_resource.exists
     Chef::Log.info("Create #{new_resource.dbname} already exists - Nothing to do")
   else
+    Chef::Log.info("Create #{new_resource.dbname} does not exists - Creating Zabbix database")
     converge_by("Create #{new_resource.dbname}") do
       create_new_database
     end
@@ -45,19 +60,6 @@ action :create do
 end
 
 def create_new_database
-  #   user_connection = {
-  #     :host => new_resource.host,
-  #     :port => new_resource.port,
-  #     :username => new_resource.username,
-  #     :password => new_resource.password
-  #   }
-  root_connection = {
-    :host => new_resource.host,
-    :port => new_resource.port,
-    :username => new_resource.root_username,
-    :password => new_resource.root_password
-  }
-
   zabbix_source 'extract_zabbix_database' do
     branch new_resource.branch
     version new_resource.branch
@@ -78,14 +80,13 @@ def create_new_database
     end
   end
 
-  # create zabbix database
-  mysql_database new_resource.dbname do
-    connection root_connection
+  #create zabbix database
+  execute 'populate_database' do
+    action :run
+    command "echo 'start populating database for Zabbix'"
     notifies :run, 'execute[zabbix_populate_schema]', :immediately
     notifies :run, 'execute[zabbix_populate_image]', :immediately
     notifies :run, 'execute[zabbix_populate_data]', :immediately
-    notifies :create, "mysql_database_user[#{new_resource.username}]", :immediately
-    notifies :grant, "mysql_database_user[#{new_resource.username}]", :immediately
     notifies :create, 'ruby_block[set_updated]', :immediately
   end
 
@@ -103,15 +104,15 @@ def create_new_database
                   Chef::Log.info 'Version 1.x branch of zabbix in use'
                   [
                     ['zabbix_populate_schema', ::File.join(zabbix_path, 'create', 'schema', 'mysql.sql')],
-                    ['zabbix_populate_data', ::File.join(zabbix_path, 'create', 'data', 'data.sql')],
                     ['zabbix_populate_image', ::File.join(zabbix_path, 'create', 'data', 'images_mysql.sql')],
+                    ['zabbix_populate_data', ::File.join(zabbix_path, 'create', 'data', 'data.sql')],
                   ]
                 else
                   Chef::Log.info 'Version 2.x branch of zabbix in use'
                   [
                     ['zabbix_populate_schema', ::File.join(zabbix_path, 'database', 'mysql', 'schema.sql')],
-                    ['zabbix_populate_data', ::File.join(zabbix_path, 'database', 'mysql', 'data.sql')],
                     ['zabbix_populate_image', ::File.join(zabbix_path, 'database', 'mysql', 'images.sql')],
+                    ['zabbix_populate_data', ::File.join(zabbix_path, 'database', 'mysql', 'data.sql')],
                   ]
                 end
 
@@ -125,13 +126,5 @@ def create_new_database
     end
   end
 
-  # create and grant zabbix user
-  mysql_database_user new_resource.username do
-    connection root_connection
-    password new_resource.password
-    database_name new_resource.dbname
-    host new_resource.allowed_user_hosts
-    privileges [:select, :update, :insert, :create, :drop, :delete, :alter, :index]
-    action :nothing
-  end
+  Chef::Log.info("Finished populating Zabbix database #{new_resource.dbname}")
 end
