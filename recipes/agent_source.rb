@@ -8,7 +8,7 @@
 #
 
 include_recipe 'zabbix::agent_common'
-
+include_recipe 'yum-epel'
 case node['platform']
 when 'ubuntu', 'debian'
   # install some dependencies
@@ -18,8 +18,8 @@ when 'ubuntu', 'debian'
     end
   end
 
-when 'redhat', 'centos', 'scientific', 'amazon'
-  %w(fping curl-devel iksemel-devel iksemel-utils net-snmp-libs net-snmp-devel openssl-devel).each do |pck|
+  when 'redhat', 'centos', 'scientific', 'amazon'
+  %w(fping curl-devel iksemel-devel iksemel-utils net-snmp-libs net-snmp-devel openssl-devel ruby-devel rubygems gcc pcre-devel).each do |pck|
     package pck do
       action :install
     end
