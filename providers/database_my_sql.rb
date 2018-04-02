@@ -35,7 +35,7 @@ def database_exists?(dbname, host, port, root_username, root_password)
     Chef::Log.info("Connection to database '#{dbname}' on '#{host}' successful")
   rescue ::Mysql::Error
     if connection
-      Chef::Log.info("Database '#{dbname}' popualtion incomplete, clean database and re-run")
+      Chef::Log.info("Database '#{dbname}' population incomplete, clean database and re-run")
       db.query("DROP DATABASE #{dbname}")
       db.query("CREATE DATABASE #{dbname}")
       Chef::Log.info("successfully dropped table '#{dbname}'")
