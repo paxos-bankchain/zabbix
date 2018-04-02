@@ -15,7 +15,6 @@ end
 
 case node['zabbix']['database']['install_method']
 when 'rds_mysql'
-  include_recipe 'database::mysql'
   root_username       = node['zabbix']['database']['rds_master_username']
   root_password       = node['zabbix']['database']['rds_master_password']
   allowed_user_hosts  = '%'
@@ -59,7 +58,7 @@ zabbix_database node['zabbix']['database']['dbname'] do
   root_username root_username
   root_password root_password
   allowed_user_hosts allowed_user_hosts
-  source_url node['zabbix']['server']['source_url']
+  source_url Chef::Zabbix.default_download_url(node['zabbix']['server']['branch'], node['zabbix']['server']['version'])
   server_version node['zabbix']['server']['version']
   source_dir node['zabbix']['src_dir']
   install_dir node['zabbix']['install_dir']

@@ -34,8 +34,7 @@ when 'windows'
   default['zabbix']['agent']['install_method']  = 'chocolatey'
 end
 
-default['zabbix']['agent']['log_file']           = nil # default (Syslog / windows event).
-# default['zabbix']['agent']['log_file']           = ::File.join(node['zabbix']['log_dir'], "zabbix_agentd.log"
+default['zabbix']['agent']['log_file']           = ::File.join(node['zabbix']['log_dir'], "zabbix_agentd.log")
 default['zabbix']['agent']['start_agents']       = nil # default (3)
 default['zabbix']['agent']['debug_level']        = nil # default (3)
 default['zabbix']['agent']['templates']          = []

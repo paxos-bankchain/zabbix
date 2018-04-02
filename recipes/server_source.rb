@@ -37,18 +37,18 @@ when 'redhat', 'centos', 'scientific', 'amazon', 'oracle'
 
   curldev = (node['platform_version'].to_i < 6) ? 'curl-devel' : 'libcurl-devel'
 
-  packages = %w(fping iksemel-devel iksemel-utils net-snmp-libs net-snmp-devel openssl-devel php-pear pcre-devel libevent-devel mysql mysql-devel)
-  packages.push('redhat-lsb') if node['init_package'] != 'systemd'
+  packages = %w(fping iksemel-devel iksemel-utils net-snmp-libs net-snmp-devel openssl-devel pcre-devel libevent-devel)
+  packages.push('redhat-lsb-core') if node['init_package'] != 'systemd'
   packages.push(curldev)
 
   case node['zabbix']['database']['install_method']
   when 'mysql', 'rds_mysql'
     php_packages =
-    if node['platform_version'].to_i < 6
-      %w(php53-mysql php53-gd php53-bcmath php53-mbstring php53-xml)
-    else
-      %w(php-mysql php-gd php-bcmath php-mbstring php-xml)
-    end
+    #if node['platform_version'].to_i < 6
+    #  %w(php53-mysql php53-gd php53-bcmath php53-mbstring php53-xml)
+    #else
+      %w(php56-mysqlnd php56-gd php56-bcmath php56-mbstring php56-xml)
+    #end
     packages.push(*php_packages)
   when 'postgres'
     php_packages =

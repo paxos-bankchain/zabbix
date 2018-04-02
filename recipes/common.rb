@@ -8,6 +8,14 @@
 #
 
 # Define root owned folders
+#
+# user 'zabbix' do
+#   comment 'A random user'
+#   uid '1234'
+#   shell '/bin/bash'
+#   password 'password'
+# end
+
 root_dirs = [
   node['zabbix']['etc_dir'],
 ]
