@@ -40,7 +40,7 @@ zabbix_source 'install_zabbix_agent' do
   code_dir node['zabbix']['src_dir']
   target_dir "zabbix-#{node['zabbix']['agent']['version']}-agent"
   install_dir node['zabbix']['install_dir']
+  tmp_dir node['zabbix']['tmp_dir']
   configure_options configure_options.join(' ')
-
   action :install_agent
 end

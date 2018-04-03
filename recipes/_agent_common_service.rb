@@ -1,10 +1,17 @@
 # Manage Agent service
+# For windows, installing and starting service by commands, https://www.zabbix.com/documentation/3.4/manual/appendix/install/windows_agent
+# Also need to configure firewall to let Zabbix server talk to agent.
 if platform_family?('windows')
-  service 'zabbix_agentd' do
-    service_name 'Zabbix Agent'
-    provider Chef::Provider::Service::Windows
-    supports :restart => true
+  execute 'install_zabbix_agentd' do
+    command "#{node['zabbix']['agent']['agentd_dir']} --config \"#{node['zabbix']['agent']['config_file']}\" --install"
     action :nothing
+  end
+  execute 'start_zabbix_agentd' do
+    command "#{node['zabbix']['agent']['agentd_dir']} --start"
+    action :nothing
+  end
+  execute 'config_firewall' do
+    command "netsh advfirewall firewall add rule name=\"zabbix_agentd\" dir=in action=allow program=\"#{node['zabbix']['agent']['win_agentd_dir']}.exe\" localport=#{node['zabbix']['agent']['zabbix_agent_port']} protocol=TCP enable=yes"
   end
 elsif node['init_package'] == 'systemd'
   template '/lib/systemd/system/zabbix-agent.service' do
