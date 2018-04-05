@@ -7,25 +7,27 @@ when 'windows'
   if ENV['ProgramFiles'] == ENV['ProgramFiles(x86)']
     # if user has never logged into an interactive session then ENV['homedrive'] will be nil
     default['zabbix']['etc_dir']    = ::File.join((ENV['homedrive'] || 'C:'), 'Program Files', 'Zabbix Agent')
-    default['zabbix']['install_dir']         = 'C:/opt/zabbix'
-    default['zabbix']['src_dir']             = 'C:/opt'
-    default['zabbix']['tmp_dir']             = 'C:/tmp'
   else
     default['zabbix']['etc_dir']    = ::File.join(ENV['ProgramFiles'], 'Zabbix Agent')
-    default['zabbix']['install_dir']         = 'C:/opt/zabbix'
-    default['zabbix']['src_dir']             = 'C:/opt'
-    default['zabbix']['tmp_dir']             = 'C:/tmp'
   end
+  default['zabbix']['install_dir']           = 'C:/zabbix/install'
+  default['zabbix']['src_dir']               = 'C:/zabbix'
+  default['zabbix']['tmp_dir']               = 'C:/tmp'
+  default['zabbix']['home']                  = 'C:/zabbix'
+  default['zabbix']['web_dir']               = 'C:/zabbix/web'
+  default['zabbix']['external_dir']          = 'C:/zabbix/externalscripts'
+  default['zabbix']['alert_dir']             = 'C:/zabbix/AlertScriptsPath'
 else
   default['zabbix']['etc_dir']               = '/etc/zabbix'
   default['zabbix']['install_dir']           = '/opt/zabbix'
   default['zabbix']['src_dir']               = '/opt'
   default['zabbix']['tmp_dir']               = '/tmp'
+  default['zabbix']['home']                  = '/opt/zabbix'
+  default['zabbix']['web_dir']               = '/opt/zabbix/web'
+  default['zabbix']['external_dir']          = '/opt/zabbix/externalscripts'
+  default['zabbix']['alert_dir']             = '/opt/zabbix/AlertScriptsPath'
 end
 
-default['zabbix']['web_dir']                 = '/opt/zabbix/web'
-default['zabbix']['external_dir']            = '/opt/zabbix/externalscripts'
-default['zabbix']['alert_dir']               = '/opt/zabbix/AlertScriptsPath'
 default['zabbix']['lock_dir']                = '/var/lock/subsys'
 
 default['zabbix']['log_dir']                 = '/var/log/zabbix'
@@ -35,7 +37,6 @@ default['zabbix']['login']                   = 'zabbix'
 default['zabbix']['group']                   = 'zabbix'
 default['zabbix']['uid']                     = nil
 default['zabbix']['gid']                     = nil
-default['zabbix']['home']                    = '/opt/zabbix'
 default['zabbix']['shell']                   = '/bin/bash'
 default['mariadb']['use_default_repository'] = true
 
