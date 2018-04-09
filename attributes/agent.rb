@@ -5,7 +5,7 @@ default['zabbix']['agent']['install']           = true
 default['zabbix']['agent']['service_state']     = [:start, :enable]
 
 default['zabbix']['agent']['branch']            = 'ZABBIX%20Latest%20Stable'
-default['zabbix']['agent']['version']           = '2.2.0'
+default['zabbix']['agent']['version']           = '3.4.7'
 default['zabbix']['agent']['source_url']        = nil
 default['zabbix']['agent']['servers']           = []
 default['zabbix']['agent']['servers_active']    = []
@@ -14,11 +14,12 @@ default['zabbix']['agent']['configure_options'] = ['--with-libcurl']
 default['zabbix']['agent']['include_dir']       = ::File.join(node['zabbix']['etc_dir'], 'agent_include')
 default['zabbix']['agent']['enable_remote_commands'] = true
 default['zabbix']['agent']['listen_port']       = '10050'
-default['zabbix']['agent']['timeout']       	= '3'
+default['zabbix']['agent']['timeout']           = '3'
 
 default['zabbix']['agent']['config_file']               = ::File.join(node['zabbix']['etc_dir'], 'zabbix_agentd.conf')
 default['zabbix']['agent']['userparams_config_file']    = ::File.join(node['zabbix']['agent']['include_dir'], 'user_params.conf')
-
+default['zabbix']['agent']['agentd_dir']                = ::File.join(node['zabbix']['src_dir'], "zabbix-#{node['zabbix']['agent']['version']}-agent/bin/win64/zabbix_agentd")
+default['zabbix']['agent']['win_agentd_dir']            = node['zabbix']['agent']['agentd_dir'].gsub('/', '\\')
 default['zabbix']['agent']['groups']            = ['chef-agent']
 
 case node['platform_family']

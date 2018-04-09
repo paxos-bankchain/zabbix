@@ -11,6 +11,11 @@ root_dirs.each do |dir|
       mode '755'
     end
     recursive true
-    notifies :restart, 'service[zabbix_agentd]'
+    if node['platform_family'] == 'windows'
+      notifies :run, 'execute[install_zabbix_agentd]'
+      notifies :run, 'execute[start_zabbix_agentd]'
+    else
+      notifies :restart, 'service[zabbix_agentd]'
+    end
   end
 end
