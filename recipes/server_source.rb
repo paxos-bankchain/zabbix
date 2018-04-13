@@ -117,6 +117,7 @@ zabbix_source 'install_zabbix_server' do
   code_dir node['zabbix']['src_dir']
   target_dir "zabbix-#{node['zabbix']['server']['version']}"
   install_dir node['zabbix']['install_dir']
+  tmp_dir node['zabbix']['tmp_dir']
   configure_options configure_options.join(' ')
 
   action :install_server
@@ -165,6 +166,8 @@ service 'zabbix_server' do
   service_name 'zabbix-server' if node['init_package'] == 'systemd'
   supports :status => true, :start => true, :stop => true, :restart => true
   action [:start, :enable]
+  notifies :run, 'execute[pagerDuty_syslink]', :immediately
+  notifies :run, 'ruby_block[configure zabbix monitor]', :delayed
 end
 
 # Configure the Java Gateway
