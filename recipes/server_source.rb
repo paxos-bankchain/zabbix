@@ -166,8 +166,6 @@ service 'zabbix_server' do
   service_name 'zabbix-server' if node['init_package'] == 'systemd'
   supports :status => true, :start => true, :stop => true, :restart => true
   action [:start, :enable]
-  notifies :run, 'execute[pagerDuty_syslink]', :immediately
-  notifies :run, 'ruby_block[configure zabbix monitor]', :delayed
 end
 
 # Configure the Java Gateway
