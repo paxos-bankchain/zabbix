@@ -117,6 +117,7 @@ zabbix_source 'install_zabbix_server' do
   code_dir node['zabbix']['src_dir']
   target_dir "zabbix-#{node['zabbix']['server']['version']}"
   install_dir node['zabbix']['install_dir']
+  tmp_dir node['zabbix']['tmp_dir']
   configure_options configure_options.join(' ')
 
   action :install_server
