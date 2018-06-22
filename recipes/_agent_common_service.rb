@@ -4,6 +4,7 @@
 if platform_family?('windows')
   execute 'stop_zabbix_if_exist' do
     command "if ((sc.exe query 'Zabbix Agent') -notlike '*FAILED*') {net stop 'Zabbix Agent'; sc.exe delete 'Zabbix Agent' }"
+    action :nothing
   end
   execute 'install_zabbix_agentd' do
     command "#{node['zabbix']['agent']['agentd_dir']} --config \"#{node['zabbix']['agent']['config_file']}\" --install"
