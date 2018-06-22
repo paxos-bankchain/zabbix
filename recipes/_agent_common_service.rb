@@ -2,6 +2,9 @@
 # For windows, installing and starting service by commands, https://www.zabbix.com/documentation/3.4/manual/appendix/install/windows_agent
 # Also need to configure firewall to let Zabbix server talk to agent.
 if platform_family?('windows')
+  execute 'stop_zabbix_if_exist' do
+    command "if ((sc.exe query 'Zabbix Agent') -notlike '*FAILED*') {net stop 'Zabbix Agent'; sc.exe delete 'Zabbix Agent' }"
+  end
   execute 'install_zabbix_agentd' do
     command "#{node['zabbix']['agent']['agentd_dir']} --config \"#{node['zabbix']['agent']['config_file']}\" --install"
     action :nothing
