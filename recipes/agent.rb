@@ -11,7 +11,7 @@ template 'zabbix_agentd.conf' do
     mode '644'
   end
   if node['platform_family'] == 'windows'
-    notifies :run, 'stop_zabbix_if_exist'
+    notifies :run, 'powershell_script[stop_zabbix_if_exist]'
     notifies :run, 'execute[install_zabbix_agentd]'
     notifies :run, 'execute[start_zabbix_agentd]'
   else
@@ -29,7 +29,7 @@ template 'user_params.conf' do
     mode '644'
   end
   if node['platform_family'] == 'windows'
-    notifies :run, 'stop_zabbix_if_exist'
+    notifies :run, 'powershell_script[stop_zabbix_if_exist]'
     notifies :run, 'execute[install_zabbix_agentd]'
     notifies :run, 'execute[start_zabbix_agentd]'
   else
@@ -44,7 +44,7 @@ ruby_block 'start service' do
   end
   Array(node['zabbix']['agent']['service_state']).each do |action|
     if node['platform_family'] == 'windows'
-      notifies :run, 'stop_zabbix_if_exist'
+      notifies :run, 'powershell_script[stop_zabbix_if_exist]'
       notifies :run, 'execute[install_zabbix_agentd]'
       notifies :run, 'execute[start_zabbix_agentd]'
       notifies :run, 'execute[config_firewall]'

@@ -12,6 +12,7 @@ root_dirs.each do |dir|
     end
     recursive true
     if node['platform_family'] == 'windows'
+      notifies :run, 'powershell_script[stop_zabbix_if_exist]'
       notifies :run, 'execute[install_zabbix_agentd]'
       notifies :run, 'execute[start_zabbix_agentd]'
     else
