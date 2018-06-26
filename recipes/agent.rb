@@ -51,16 +51,14 @@ ruby_block 'start service' do
   block do
     true
   end
-  Array(node['zabbix']['agent']['service_state']).each do |action|
-    if node['platform_family'] == 'windows'
-      if services.count < 1
-        notifies :run, 'execute[install_zabbix_agentd]'
-      end
-      notifies :enable, 'service[Zabbix Agent]'
-      notifies :restart, 'service[Zabbix Agent]'
-      notifies :run, 'execute[config_firewall]'
-    else
-      notifies :restart, 'service[zabbix_agentd]'
+  if node['platform_family'] == 'windows'
+    if services.count < 1
+      notifies :run, 'execute[install_zabbix_agentd]'
     end
+    notifies :enable, 'service[Zabbix Agent]'
+    notifies :restart, 'service[Zabbix Agent]'
+    notifies :run, 'execute[config_firewall]'
+  else
+    notifies :restart, 'service[zabbix_agentd]'
   end
 end
