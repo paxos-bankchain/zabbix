@@ -1,6 +1,11 @@
 include_recipe "zabbix::agent_#{node['zabbix']['agent']['install_method']}"
 include_recipe 'zabbix::agent_common'
 
+require 'win32ole'
+zabbixservice = 'Zabbix Agent'
+wmi = WIN32OLE.connect("winmgmts://")
+services = wmi.ExecQuery("Select * from Win32_Service where Name = '#{zabbixservice}'")
+
 # Install configuration
 template 'zabbix_agentd.conf' do
   path node['zabbix']['agent']['config_file']
@@ -11,9 +16,11 @@ template 'zabbix_agentd.conf' do
     mode '644'
   end
   if node['platform_family'] == 'windows'
-    notifies :run, 'powershell_script[stop_zabbix_if_exist]'
-    notifies :run, 'execute[install_zabbix_agentd]'
-    notifies :run, 'execute[start_zabbix_agentd]'
+    if services.count < 1
+      notifies :run, 'execute[install_zabbix_agentd]'
+    end
+    notifies :enable, 'service[Zabbix Agent]'
+    notifies :restart, 'service[Zabbix Agent]'
   else
     notifies :restart, 'service[zabbix_agentd]'
   end
@@ -29,9 +36,11 @@ template 'user_params.conf' do
     mode '644'
   end
   if node['platform_family'] == 'windows'
-    notifies :run, 'powershell_script[stop_zabbix_if_exist]'
-    notifies :run, 'execute[install_zabbix_agentd]'
-    notifies :run, 'execute[start_zabbix_agentd]'
+    if services.count < 1
+      notifies :run, 'execute[install_zabbix_agentd]'
+    end
+    notifies :enable, 'service[Zabbix Agent]'
+    notifies :restart, 'service[Zabbix Agent]'
   else
     notifies :restart, 'service[zabbix_agentd]'
   end
@@ -44,9 +53,11 @@ ruby_block 'start service' do
   end
   Array(node['zabbix']['agent']['service_state']).each do |action|
     if node['platform_family'] == 'windows'
-      notifies :run, 'powershell_script[stop_zabbix_if_exist]'
-      notifies :run, 'execute[install_zabbix_agentd]'
-      notifies :run, 'execute[start_zabbix_agentd]'
+      if services.count < 1
+        notifies :run, 'execute[install_zabbix_agentd]'
+      end
+      notifies :enable, 'service[Zabbix Agent]'
+      notifies :restart, 'service[Zabbix Agent]'
       notifies :run, 'execute[config_firewall]'
     else
       notifies :restart, 'service[zabbix_agentd]'
