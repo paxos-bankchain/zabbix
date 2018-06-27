@@ -44,3 +44,6 @@ zabbix_source 'install_zabbix_agent' do
   configure_options configure_options.join(' ')
   action :install_agent
 end
+
+# running _agent_common_service after installation since we will need to run install_zabbix_agentd after zabbix is installed
+include_recipe 'zabbix::_agent_common_service'

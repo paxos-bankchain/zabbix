@@ -1,10 +1,15 @@
 # Manage Agent service
 # For windows, installing and starting service by commands, https://www.zabbix.com/documentation/3.4/manual/appendix/install/windows_agent
 # Also need to configure firewall to let Zabbix server talk to agent.
+
 if platform_family?('windows')
+  require 'win32ole'
+  zabbixservice = 'Zabbix Agent'
+  wmi = WIN32OLE.connect("winmgmts://")
+
   execute 'install_zabbix_agentd' do
     command "#{node['zabbix']['agent']['agentd_dir']} --config \"#{node['zabbix']['agent']['config_file']}\" --install"
-    action :nothing
+    not_if  { wmi.ExecQuery("Select * from Win32_Service where Name = '#{zabbixservice}'").count > 0 }
   end
   service 'Zabbix Agent' do
     supports :status => true, :start => true, :stop => true, :restart => true
