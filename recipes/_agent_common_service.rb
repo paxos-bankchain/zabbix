@@ -17,6 +17,7 @@ if platform_family?('windows')
   end
   execute 'config_firewall' do
     command "netsh advfirewall firewall add rule name=\"zabbix_agentd\" dir=in action=allow program=\"#{node['zabbix']['agent']['win_agentd_dir']}.exe\" localport=#{node['zabbix']['agent']['zabbix_agent_port']} protocol=TCP enable=yes"
+    action :nothing
   end
 elsif node['init_package'] == 'systemd'
   template '/lib/systemd/system/zabbix-agent.service' do
