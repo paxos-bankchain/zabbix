@@ -9,15 +9,21 @@ if platform_family?('windows')
 
   execute 'install_zabbix_agentd' do
     command "#{node['zabbix']['agent']['agentd_dir']} --config \"#{node['zabbix']['agent']['config_file']}\" --install"
-    not_if  { wmi.ExecQuery("Select * from Win32_Service where Name = '#{zabbixservice}'").count > 0 }
+    not_if  {
+      wmi.ExecQuery("Select * from Win32_Service where Name = '#{zabbixservice}'").count > 0
+    }
   end
   service 'Zabbix Agent' do
     supports :status => true, :start => true, :stop => true, :restart => true
     action :nothing
   end
+
+  # not adding firewall if already exist
   execute 'config_firewall' do
     command "netsh advfirewall firewall add rule name=\"zabbix_agentd\" dir=in action=allow program=\"#{node['zabbix']['agent']['win_agentd_dir']}.exe\" localport=#{node['zabbix']['agent']['zabbix_agent_port']} protocol=TCP enable=yes"
-    action :nothing
+    not_if {
+      `powershell (netsh advfirewall firewall show rule name=zabbix_agentd).count`.to_i > 3
+    }
   end
 elsif node['init_package'] == 'systemd'
   template '/lib/systemd/system/zabbix-agent.service' do
