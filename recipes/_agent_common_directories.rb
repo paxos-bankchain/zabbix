@@ -4,18 +4,20 @@ root_dirs = [
 
 # Create root folders
 root_dirs.each do |dir|
-  directory dir do
-    unless node['platform'] == 'windows'
+  case node['platform_family']
+  when 'windows'
+    directory dir do
+      notifies :enable, 'service[Zabbix Agent]'
+      notifies :restart, 'service[Zabbix Agent]'
+    end
+  else
+    directory dir do
       owner 'root'
       group 'root'
       mode '755'
-    end
-    recursive true
-    if node['platform_family'] == 'windows'
-      notifies :run, 'execute[install_zabbix_agentd]'
-      notifies :run, 'execute[start_zabbix_agentd]'
-    else
+      recursive true
       notifies :restart, 'service[zabbix_agentd]'
     end
   end
 end
+
